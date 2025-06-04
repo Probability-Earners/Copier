@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Username List Copier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #c0c0c0;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .counter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            color: #bbb;
+            font-size: 1.1rem;
+        }
+        
+        .counter-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            flex: 1;
+            max-width: 300px;
+            overflow: hidden;
+        }
+        
+        .counter-progress-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #00c9ff, #92fe9d);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .username-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .username {
+            font-size: 2.8rem;
+            color: white;
+            font-weight: 600;
+            word-break: break-all;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(3px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            color: #1a1a2e;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #f857a6, #ff5858);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .deploy-instructions {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            margin: 20px;
+            border-radius: 15px;
+            color: #ddd;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .deploy-instructions h2 {
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .deploy-instructions ol {
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .deploy-instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .deploy-instructions code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .username {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 15px 25px;
+                font-size: 1rem;
+            }
+            
+            .controls {
+                gap: 15px;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .username {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-users"></i> Username List Copier</h1>
+            <p class="subtitle">Browse through the list of usernames one by one. Click "Next" to view the next username and "Copy" to copy it to your clipboard.</p>
+        </header>
+        
+        <div class="counter">
+            <span id="currentCount">1</span>
+            <div class="counter-progress">
+                <div class="counter-progress-inner" id="progressBar"></div>
+            </div>
+            <span id="totalCount">400</span>
+        </div>
+        
+        <div class="username-display">
+            <div class="username" id="username">@Supercashusdt88</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" id="copyBtn">
+                <i class="fas fa-copy"></i> Copy Username
+            </button>
+            <button class="btn btn-secondary" id="nextBtn">
+                <i class="fas fa-arrow-right"></i> Next
+            </button>
+        </div>
+        
+        <div class="deploy-instructions">
+            <h2><i class="fab fa-github"></i> GitHub Deployment Instructions</h2>
+            <ol>
+                <li>Create a new GitHub repository named "username-copier"</li>
+                <li>Save this page as <code>index.html</code></li>
+                <li>Create a JSON file named <code>usernames.json</code> with your usernames array</li>
+                <li>Commit and push both files to your repository</li>
+                <li>Go to repository Settings → Pages → Select "main" branch → Save</li>
+                <li>Your app will be live at: <code>https://[username].github.io/username-copier/</code></li>
+            </ol>
+            <p>Example JSON file content:</p>
+            <code>
+                ["@username1", "@username2", "@username3", ...]
+            </code>
+        </div>
+        
+        <footer>
+            <p>Click "Copy" to copy the displayed username to your clipboard</p>
+        </footer>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Username copied to clipboard!</span>
+    </div>
+    
+    <script>
+        // Usernames array loaded from JSON (simulated)
+        const usernames = [
+            "@Supercashusdt88", "@Aarnavharilal", "@mraxe90", "@TeamCash_Meghna", "@Hey3858", 
+            "@jarrod_bowen", "@Tradar9", "@And254", "@JASSBIGGNER", "@Zapali301",
+            "@anandyadav124355", "@ghz1337x", "@World_wide_link", "@md1671", "@Wakanda2424",
+            "@Kinghacker433", "@PrinceUvs", "@Nithin0x", "@Sanjaya_Chawala_9057245630", "@devikaparipulse3",
+            "@Intezarkiopinion", "@Azin256", "@NivaFixed", "@javed116", "@sumit_3430", "@Honeybbdon",
+            "@FIN606F", "@Ankitbetx101", "@Lydia12345567", "@Ganuuuu_malviya_07", "@Fixer_dubaii",
+            "@Cricxtrader", "@Rahul_1x_Agent", "@Viji1200", "@sssaaa225", "@Matchwinner6", "@Boy0144",
+            "@Anuragdwivedi_real", "@Anjali7099", "@Vip_trader0013", "@princesuv", "@bossjaguarmillion",
+            "@itzfort1", "@official_xbet_support", "@A33859", "@lian_spinbetter", "@SukunaaXD",
+            "@Legendbhaitoss", "@Thats_urs_reeju", "@agentneed456", "@Badshah172", "@Kingkhan1725",
+            "@cmpitroda", "@ceosilktune", "@earnmandu12", "@dorishoward040", "@Asvec", "@Pts199801",
+            "@Prack_69", "@BHARATHMAMISETTI", "@Swildmen", "@TOXICHHY", "@nani180906", "@Shalini000786",
+            "@Dhiraj_pandey_52", "@Soumik_6", "@estheron_dem_all", "@Theresamorris112", "@Suryansh5667",
+            "@psp119", "@DAVID1x2x3", "@ChandelAS", "@Detheeplug", "@itsme212", "@Bruhabhay",
+            "@pawannnn58448", "@Anushika121", "@Ram_prasad18", "@Gokulrossisingle", "@Sathkhedabhi",
+            "@kushiredd", "@Singhsahab05", "@PraveenA210", "@Aviatorcity6", "@DoraemonTheCatRobot",
+            "@Reacher_Ftw", "@Judejal1XBET", "@REZISTJOD", "@trouble_in_paradise0013", "@tossmasteradmin",
+            "@Shek778", "@ererr11", "@winonly7363", "@TX_HACKER1", "@rohit841", "@Kk04012",
+            "@BEST_MOVIES_4k", "@rajbhai0137", "@TEMPAW", "@Ankit9967", "@Aditya8858816345",
+            "@Goatmalong", "@Vaidehipasupuleti", "@shubhamtyag", "@Maheshvatti", "@prianshumishra",
+            "@Radhikaaaaaaaaaaaaaaaaaa", "@Nithin2111", "@Boby_Deol", "@Chiku9045", "@Sachinkumarlove",
+            "@joylane009", "@priince_ramani", "@Swatk247", "@lovely539904467", "@TopMovies0011",
+            "@garvp2006", "@KhanBhaiOriginal786", "@Loke65", "@Justkickittt", "@Perfctjefceo",
+            "@No3ldsz7", "@Sawan7360", "@busters0001", "@MrGraylincon", "@Naresh_N_Gaja",
+            "@Edireswarapu", "@Wilfeng", "@CricketCriminal", "@Ernestheminways", "@who2u2",
+            "@kp9814", "@THELITTLEB0Y51", "@Meenaji1128", "@UNRULLYPROVERBS", "@Papa_hu_mein",
+            "@Saikiran07sk", "@SPPREDICTIONS1", "@James_5747", "@Babubalaji8", "@sehaj601",
+            "@arungowda1143", "@Knaxer", "@WellDoneOk", "@Tipster441", "@Brianruce",
+            "@Triumphant_Osaro", "@Dinesh0ojne", "@LeoFrancis", "@Gamboha97", "@Rhi412",
+            "@Johnsisika", "@vipin_kr_44", "@yemzywire1", "@Anthony_560", "@Gwenste46",
+            "@HIGHROLLER100", "@colorgamewinjoy", "@Anishh_h", "@SaNaRuL97", "@ludoKing1st",
+            "@Pankaj11239", "@Ethan_nathaniel86", "@Rosewilliams22", "@Smith1Aa2", "@Introvert20046",
+            "@fITq2DxgCHIj", "@BOOKIE_REALATED_ALL_WORK", "@ekomkum", "@Nharnar_Yhaww", "@habibti02",
+            "@Hacker_0166", "@kaanchanaakaur", "@AMARJIT136", "@Omaya1234", "@Arapha0",
+            "@Shel234", "@Welduu1992", "@betmaster_003", "@Sophiapertra8", "@Savqqqq",
+            "@Crazqwer", "@yusuf41ss", "@Dharmendrasingh888", "@Aarav_Malhotra1", "@Lovepretsehgal",
+            "@Hfkjhdfh", "@Cheat_code102", "@Franklinoxman", "@Adzoko", "@Scherzo36",
+            "@Dansobrook89", "@DiwemaPaul", "@Zakarifrtolo", "@Sameera_222", "@SHINU_BHAI",
+            "@Joydeep6291", "@Mohfixed", "@Berlin5484", "@Lindawilliam754314", "@cameliZZZ",
+            "@AlwaysGreen24", "@flash_fxx", "@felgeedeblanco", "@hesbonhhhh", "@ElliteMarcus",
+            "@b5b0442532d8447e8898af9d96", "@justice_005", "@rough2", "@Salem03", "@Jonnymerchant",
+            "@Endeavour_95", "@jayesh268", "@Osinta_alexs", "@Unruly_berg", "@Mabellove",
+            "@Rawbet12", "@Mocillamo", "@Alexanderbets0", "@Verifiedtipss", "@AGECz",
+            "@algotradertips", "@tipsguru01", "@Sammy0kl", "@Fixedcouponn", "@Raider_jane",
+            "@Jamparampa", "@Predictor67", "@Arpitiwarii", "@flight_forge", "@Ogeydzey",
+            "@Khumaloj", "@kdaniels00", "@eric041295", "@jaxon2906", "@Fiifishay",
+            "@yobra00", "@scoutskan", "@Sharontexas", "@rocky2877", "@danilojhr",
+            "@Hscdcscsc", "@MARSHMELLO_SAAN", "@KD101218", "@dom_dee_1", "@shreeramfixer",
+            "@IThakur143", "@Adeey54", "@Aman47560", "@SindhuP006", "@ANKITxRAY",
+            "@Mr_alvendo_36", "@Roddyricch123", "@Taijfrith", "@Miyandahamusiya", "@Fabianofixed",
+            "@Solopredicts", "@lil_Ice52", "@mr_zygote", "@PERKY214", "@Eddtedted",
+            "@DarkCrosss", "@Ezek055", "@Issaka_Alhassan_Tahiru", "@Winman020", "@ranikumari16",
+            "@Jade_bryne", "@Sihngel", "@Racht9", "@Peachimuthu", "@Joachileo",
+            "@NOVIA_JA", "@GyamfiOpoku", "@Afrifah", "@Yhaw_Dhope", "@tipster1234567",
+            "@Morrry2314", "@sylvester453", "@rajabali70", "@castvaan", "@Betsikasupport",
+            "@GchristianPlug", "@Pavanputluru", "@fetgry69", "@Angela20white", "@Rocky4646",
+            "@Sureoddshere1figo", "@mk_seeker13", "@RIYA_2018", "@Hessleblade", "@dayvydk",
+            "@PearlPuntersInc", "@SANTOSGH1", "@Babbu223", "@jiarable", "@Hansiro",
+            "@Meridith_stewart", "@cluz19", "@Wselcoin", "@Sweetoo06", "@Abhishekkumarrajpoot",
+            "@pressureboy_88", "@Lazyonline", "@Phanie_xx", "@Kingoftips1212", "@Gohard18",
+            "@SMFIXDWIN22", "@Rm_max16", "@nanakwameforex", "@C0_ADM1N", "@dasbgmi",
+            "@Bigilsamson", "@Robin23215", "@Ajeet7521", "@super365officialyoutube", "@Perry_derry_collection",
+            "@Nonski_gee", "@amarazad23", "@I1234iop", "@Kingsleywilliams", "@Shashi220F",
+            "@Kvnedem", "@Radakrasshna", "@qwesi_pounds", "@EarningTricks14", "@Rohit454545",
+            "@Pamela_delli", "@Abzcruzz", "@mertturanoriginal", "@Maakicu", "@Lancelot072",
+            "@Akashsharma250904", "@Onorkip", "@solferpredict", "@Sbfamily4803", "@MsssM378",
+            "@Krishna_240", "@nia7490", "@Faiz_akram7870", "@jod_xd23", "@Damodaran01",
+            "@DESIE_20", "@badshah008855", "@Seshanrajm", "@Ornobzz", "@Lexiwillams",
+            "@PAPAZENI", "@peavy476", "@candice725", "@Foitball1", "@Amole01",
+            "@King82736", "@ww12349293", "@Shamim154", "@Aimbolteee", "@aloooci",
+            "@Poojapaidgirl11", "@Badboy694", "@punchden", "@Maverick_junior", "@Simon_5231570271",
+            "@richghone", "@Godwinonly2", "@Baapsematstinhi", "@mounik23", "@Sistervida",
+            "@yeboahfrancis", "@King_r1cha", "@Namiqbo", "@Efo_coded", "@Apple_22pe",
+            "@Protus77", "@Nihal_wolf7pay", "@Kojobilions", "@Maxvoj", "@Asapjace",
+            "@Tammyhoods", "@Aaryandb", "@alwaysthebest63", "@IssahNasco1", "@CMG_Controller",
+            "@Richray12", "@Dommatt77", "@annmeggg", "@Mupreh", "@GEORGE340",
+            "@Anikawolf7pay", "@Jxtkallfmeronaldoba", "@kikibagameboi", "@Kipkuruibett03", "@chandu160692",
+            "@Rowena1415", "@DeeFlex23", "@EliakimO2456", "@Er0638nest", "@gilsigei",
+            "@arindamorin", "@elletan1234", "@BIGAIN300", "@Win1596", "@Brightgyasi",
+            "@magail125", "@Joshmimi", "@emma24848", "@JasonJ10", "@ogalaw04",
+            "@happyik", "@Option_101", "@Teccafame", "@totti600", "@TradingWithShivi",
+            "@shattademajikal", "@QUEENROSARIA", "@Sittu_jii", "@FxScalper001", "@Mr_thank_yo_u",
+            "@Hamza_Affiliates_Manager", "@Nana_kwame_Foreigna", "@Marga1414", "@janetava1", "@ryan_hero",
+            "@agenttttsss", "@None1234567891011", "@king_bose_a", "@avro112", "@Bomb_bae",
+            "@Kwahdjo3539", "@Rio_Dada", "@HONEEYBEEBET", "@adarsh111210", "@Gonnhk",
+            "@Kdsattamatka78", "@Clubcricket01", "@mani2027", "@maxwell2029", "@Desbeee",
+            "@BABANEE1", "@London_lions58", "@Woss9", "@itsOnlyMe1199", "@hhxhhdjxb",
+            "@Nii_Yarbi", "@luv8879", "@Giacomo_992", "@cbtfofficiall", "@Shares242",
+            "@Jerry123456789010", "@Antwi_japhet", "@Rmsoakings", "@stapha0863", "@GHClone2Bot",
+            "@LeonRP2002", "@A_157_303_S", "@Chinmay_Joshi", "@MUTRUS001", "@Defaulter21",
+            "@jas_per122", "@EdenTD", "@rudrapratap83", "@Bantimeenadtajwgjakw", "@its_abhi_pandey",
+            "@kml_choudhary", "@juhi904", "@keshavtaneja0808", "@ARMAANCRICKETPREDICTION", "@Nandani789",
+            "@GURU_TIGER", "@souravsrv7", "@Alazar267", "@febi1245", "@Darshangajare",
+            "@Vimlesh", "@diamondramrana", "@Gred96", "@PACHA1337", "@yongeei2018",
+            "@Davide_della98", "@GREEDINESS16", "@Jugaadu2", "@crazydcgn", "@scifidemon",
+            "@Muhammadzia810", "@joinhider_bot", "@telemethebot", "@LinksPost_bot", "@limitless_nf",
+            "@akmalhotra96", "@bajaj0010", "@Runishs", "@Najmulyt", "@AntiHyperlinkBot",
+            "@Shubham_zz", "@silencehaunter", "@Sumaprasannan"
+        ];
+        
+        // DOM elements
+        const usernameEl = document.getElementById('username');
+        const nextBtn = document.getElementById('nextBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const notification = document.getElementById('notification');
+        const currentCountEl = document.getElementById('currentCount');
+        const totalCountEl = document.getElementById('totalCount');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Initialize counters and display
+        let currentIndex = 0;
+        totalCountEl.textContent = usernames.length;
+        
+        // Function to update the displayed username
+        function updateUsername() {
+            usernameEl.textContent = usernames[currentIndex];
+            currentCountEl.textContent = currentIndex + 1;
+            
+            // Update progress bar
+            const progress = ((currentIndex + 1) / usernames.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Function to copy username to clipboard
+        function copyUsername() {
+            navigator.clipboard.writeText(usernames[currentIndex])
+                .then(() => {
+                    // Show notification
+                    notification.classList.add('show');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy username. Please try again.');
+                });
+        }
+        
+        // Event listeners
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % usernames.length;
+            updateUsername();
+            
+            // Add animation effect
+            usernameEl.style.transform = 'translateX(20px)';
+            usernameEl.style.opacity = '0';
+            setTimeout(() => {
+                usernameEl.style.transform = 'translateX(0)';
+                usernameEl.style.opacity = '1';
+            }, 300);
+        });
+        
+        copyBtn.addEventListener('click', copyUsername);
+        
+        // Initialize
+        updateUsername();
+    </script>
+</body>
+</html>
